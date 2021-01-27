@@ -12,14 +12,14 @@ function speak() {
     word = word.replace(/\n/gi, '.');
 
     if (lastWord != word) {
+        lastWord = word
+        $("#wordcard").toggleClass("is-hidden")
         getWordMeaning(word)
-
-        var audio = document.getElementById('audio')
-        audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
-        audio.playbackRate = 0.8; // Set Speak Speed
-        audio.play()
     } else {
         console.log("Skipping fetch, playing same word")
+        var audio = document.getElementById('audio')
+        audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
+        audio.playbackRate = 0.9; // Set Speak Speed
         audio.play()
     }
 }
@@ -39,11 +39,15 @@ function getWordMeaning(word) {
             .then((result) => {
                 const obj = result
 
-                $("#wordcard").toggleClass("is-hidden")
-                $("#wordcard-header").text(obj.word)
-                $("#wordcard-pronunciation").text('/' + obj.pronunciation + '/')
-                $("#wordcard-type").text(obj.definitions[0].type)
-                $("#wordcard-meaning").html(obj.definitions[0].definition)
-                $("#wordcard-example").html(obj.definitions[0].example)
+                if(typeof obj.definitions === "undefined") {
+                    $("#wordcard-header").text(word)
+                    $("#wordcard-meaning").text("No definitions found for : " + word)
+                } else {
+                    $("#wordcard-header").text(obj.word)
+                    $("#wordcard-pronunciation").text('/' + obj.pronunciation + '/')
+                    $("#wordcard-type").text(obj.definitions[0].type)
+                    $("#wordcard-meaning").html(obj.definitions[0].definition)
+                    $("#wordcard-example").html(obj.definitions[0].example)
+                }
             }))
 }
