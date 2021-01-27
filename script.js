@@ -4,6 +4,7 @@ var lastWord = ""
 function speak() {
 
     var text = document.getElementById('tts').value;
+    var audio = document.getElementById('audio')
 
     var word = text.replace(/\:/gi, '.');
     word = word.replace(/\!/gi, '!.');
@@ -15,11 +16,12 @@ function speak() {
         lastWord = word
         $("#wordcard").toggleClass("is-hidden")
         getWordMeaning(word)
-    } else {
-        console.log("Skipping fetch, playing same word")
-        var audio = document.getElementById('audio')
+
         audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
         audio.playbackRate = 0.9; // Set Speak Speed
+        audio.play()
+    } else {
+        console.log("Skipping fetch, playing same word")
         audio.play()
     }
 }
