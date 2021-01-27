@@ -1,50 +1,49 @@
 const lan = "en"
+var lastWord = ""
 
 function speak() {
 
-  var text = document.getElementById('tts').value;
+    var text = document.getElementById('tts').value;
 
-  var text2 = text.replace(/\:/gi, '.');
-  text2 = text2.replace(/\!/gi, '!.');
-  text2 = text2.replace(/\?/gi, '?.');
-  text2 = text2.replace(/\;/gi, '.');
-  text2 = text2.replace(/\n/gi, '.');
-  //text2 = text2.replace(/\,/gi, '.');
+    var word = text.replace(/\:/gi, '.');
+    word = word.replace(/\!/gi, '!.');
+    word = word.replace(/\?/gi, '?.');
+    word = word.replace(/\;/gi, '.');
+    word = word.replace(/\n/gi, '.');
 
-  text2 = text2.split('.');
+    if (lastWord != word) {
+        getWordMeaning(word)
 
-  text = text2.filter(v => v != '');
-
-  // Check Array
-  // document.getElementById('text').value = text.join('#')
-
-  // Start Playing
-  //startPlaying(text);
-  
-  for(var i=0; i<text.length; i++) {
-    var audio = document.getElementById('audio')
-    audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(text[i])
-    audio.playbackRate = 1; // Set Speak Speed
-    audio.play()
-  }
+        var audio = document.getElementById('audio')
+        audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
+        audio.playbackRate = 0.8; // Set Speak Speed
+        audio.play()
+    } else {
+        console.log("Skipping fetch, playing same word")
+        audio.play()
+    }
 }
 
-function startPlaying(text) {
-  
-  var audio = document.getElementById('audio')
-  var current = 0
+function getWordMeaning(word) {
+    var url = "https://owlbot.info/api/v4/dictionary/" + word;
 
-  audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(text[current])
-  
-  audio.playbackRate = 1; // Set Speak Speed
-
-  audio.play()
-
-  audio.onended = function() {
-    if (current < text.length - 1) {
-      current += 1
-      startPlaying(current)
+    var params = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Token ' + 'da037b8ade60b09902c70611dc9fe12fb0ad8235'
+        }
     }
-  };
 
+    fetch(url, params)
+        .then((res) => res.json()
+            .then((result) => {
+                const obj = result
+
+                $("#wordcard").toggleClass("is-hidden")
+                $("#wordcard-header").text(obj.word)
+                $("#wordcard-pronunciation").text('/' + obj.pronunciation + '/')
+                $("#wordcard-type").text(obj.definitions[0].type)
+                $("#wordcard-meaning").html(obj.definitions[0].definition)
+                $("#wordcard-example").html(obj.definitions[0].example)
+            }))
 }
