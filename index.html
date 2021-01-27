@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Bulma!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <!-- import the webpage's client-side javascript file -->
     <script src="/script.js" defer></script>
-  </head>
-  <body>
+</head>
+
+<body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="https://spellbee.github.io">
-            <p class="subtitle is-5" color="tomato"><i class="fas fa-magic" color="tomato"></i>&nbsp; Spell Bee</p>
+                <p class="subtitle is-5" color="tomato"><i class="fas fa-magic" color="tomato"></i>&nbsp; Spell Bee</p>
             </a>
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
             </a>
         </div>
         <div>
@@ -26,7 +30,8 @@
         </div>
         <div class="navbar-start">
             <a class="navbar-item is-tab is-active">
-                <span class="is-large"><i class="far fa-comment-dots" aria-hidden="true"></i>&nbsp;&nbsp;Pronounce</span>
+                <span class="is-large"><i class="far fa-comment-dots"
+                        aria-hidden="true"></i>&nbsp;&nbsp;Pronounce</span>
             </a>
             <a class="navbar-item is-tab">
                 <span class="is-large"><i class="fas fa-tasks" aria-hidden="true"></i>&nbsp;&nbsp;Practice</span>
@@ -58,19 +63,37 @@
                         </button>
                     </div>
                 </div>
-                <div class="field"></div>
-                    <div class="control is-hidden">
-                        <audio controls id="audio">
-                            <source src="http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=pt&q=Hello" type="audio/mp3">
-                          Your browser does not support the audio element.
-                        </audio>
+                <div class="field">
+                    <div class="card is-hidden" id="wordcard">
+                        <header class="card-header">
+                            <p id="wordcard-header" class="card-header-title">
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <p id="wordcard-pronunciation" style="color: #808080;"></p>
+                            <br/>
+                            <div class="content">
+                                <i><p id="wordcard-type"></p></i>
+                                <p id="wordcard-meaning"></p>
+                                <i><p id="wordcard-example" style="color: #808080;"></p></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-        
+                <div class="field"></div>
+                <div class="control is-hidden">
+                    <audio controls id="audio">
+                        <source src="http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=pt&q=Hello"
+                            type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
             </div>
+
         </div>
     </div>
-  <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cash/8.1.0/cash.min.js" />
-  </body>
+    </div>
+    <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+</body>
+
 </html>
