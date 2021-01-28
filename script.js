@@ -17,13 +17,48 @@ function speak() {
         $("#wordcard").toggleClass("is-hidden")
         getWordMeaning(word)
 
-        audio.src = "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
-        audio.playbackRate = 0.9; // Set Speak Speed
-        audio.play()
+        //audio.src = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lan + "&q=" + encodeURIComponent(word)
+        //audio.playbackRate = 0.9; // Set Speak Speed
+        //audio.play()
+        textToSpeech(word)
     } else {
         console.log("Skipping fetch, playing same word")
         audio.play()
     }
+}
+
+function textToSpeech(word) {
+    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=AIzaSyDCUVKNJBzW6XAWg0K0mZCM9uMkE25SqDc'
+    const data = {
+        'input':{
+            'text': word
+        },
+        'voice':{
+            'languageCode':'en-US',
+            'name':'en-US-Wavenet-C',
+            'ssmlGender':'FEMALE'
+        },
+        'audioConfig':{
+        'audioEncoding':'MP3'
+        }
+    }
+    const otherparam={
+        headers:{
+            "content-type":"application/json; charset=UTF-8"
+        },
+        body:JSON.stringify(data),
+        method:"POST"
+     };
+    fetch(url,otherparam)
+    .then(data=>{return data.json()})
+    .then(res=>{
+        console.log(res.audioContent)
+        var audio = document.getElementById('audio')
+        audio.src = "data:audio/mp3;base64," + res.audioContent
+        audio.playbackRate = 0.9;
+        audio.play()
+     })
+    .catch(error=>{console.log(error);state.onError(error)})
 }
 
 function getWordMeaning(word) {
