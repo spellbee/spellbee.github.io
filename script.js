@@ -14,10 +14,6 @@ var incorrectList = []
 var isIncorrectListSession = false
 var pruneMissedList = []
 
-if (typeof localStorage.incorrectList !== "undefined") {
-    incorrectList = JSON.parse(localStorage.incorrectList);
-}
-
 if (typeof localStorage.practiceList !== "undefined") {
     currentList = JSON.parse(localStorage.practiceList)
 }
@@ -129,7 +125,6 @@ function textToSpeech(word) {
     fetch(url, otherparam)
         .then(data => { return data.json() })
         .then(res => {
-            console.log(res.audioContent)
             var audio = document.getElementById('audio')
             audio.src = "data:audio/mp3;base64," + res.audioContent
             audio.playbackRate = 0.9;
@@ -252,7 +247,7 @@ function hideButtonsBasedOnState() {
     } else {
         $("#practice-resume").addClass("is-hidden")
     }
-    if (incorrectList.length > 0) {
+    if (JSON.parse(localStorage.incorrectList).length > 0) {
         $("#practice-miss").removeClass("is-hidden")
     } else {
         $("#practice-miss").addClass("is-hidden")
@@ -281,8 +276,13 @@ function resumePractice(resume) {
     $("#practice-card").removeClass("is-hidden")
 
     if (resume) {
+        if(currentList.length > 0) {
         currentIndex = JSON.parse(localStorage.currentItem)
         console.log("Resuming previous sesion!")
+        } else {
+            showMessage("Practice words list is empty! Navigate to words section and select from file.", "error")
+            endPractice()
+        }
     }
 
     if (currentIndex < currentList.length) {
@@ -294,10 +294,7 @@ function resumePractice(resume) {
 function endPractice() {
     $("#practice-card").addClass("is-hidden")
     localStorage.currentItem = JSON.stringify(0)
-    if (!isIncorrectListSession) {
-        localStorage.removeItem("practiceList")
-        localStorage.incorrectList = JSON.stringify(incorrectList)
-    } else {
+    if (isIncorrectListSession) {
         var tempArray = JSON.parse(localStorage.incorrectList)
         for (i = 0; i < pruneMissedList.length; i++) {
             const index = tempArray.indexOf(pruneMissedList[i])
@@ -306,6 +303,8 @@ function endPractice() {
             }
         }
         localStorage.incorrectList = JSON.stringify(tempArray)
+    } else {
+        localStorage.removeItem("practiceList")
     }
 
     isIncorrectListSession = false
@@ -356,8 +355,15 @@ function removeFromMissedList(word) {
 function appendToMissedList(word) {
     if (!incorrectList.includes(word)) {
         incorrectList.push(word)
-        console.log(incorrectList)
-        localStorage.incorrectList = JSON.stringify(incorrectList)
+        var tempArray = JSON.parse(localStorage.incorrectList)
+        for (i = 0; i < incorrectList.length; i++) {
+            const index = tempArray.indexOf(incorrectList[i])
+            if (index < 0) {
+                tempArray.push(incorrectList[i])
+            }
+        }
+        localStorage.incorrectList = JSON.stringify(tempArray)
+        console.log(localStorage.incorrectList)
         console.log(word + " added to incorrect master list.");
     }
     $("#miss-list").append("<p><i class='fas fa-times has-text-danger-dark'></i>&nbsp;&nbsp;<span>" + word + "</span></p>")
