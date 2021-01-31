@@ -3,6 +3,7 @@ const GOOGLE_TTS_URL = "https://texttospeech.googleapis.com/v1beta1/text:synthes
 const API_KEY = "AIzaSyDCUVKNJBzW6XAWg0K0mZCM9uMkE25SqDc"
 const OWLBOT_URL = "https://owlbot.info/api/v4/dictionary/"
 const OWLBOT_API_TOKEN = "da037b8ade60b09902c70611dc9fe12fb0ad8235"
+const GIHUB_TEXT_FOLDER = "https://raw.githubusercontent.com/spellbee/spellbee.github.io/main/wordlist/"
 
 var lastWord = ""
 
@@ -342,4 +343,15 @@ function appendToMissedList(word) {
         console.log(word + " added to incorrect master list.");
     }
     $("#miss-list").append("<p><i class='fas fa-times has-text-danger-dark'></i>&nbsp;&nbsp;<span>" + word + "</span></p>")
+}
+
+function fetchWordsOnline(){
+    var selectedGrade = $("#grade").val()
+    $.ajax({
+        url : GIHUB_TEXT_FOLDER + "grade-" + selectedGrade + ".txt",
+        dataType: "text",
+        success : function (data) {
+            $("#wordlist").text(data);
+        }
+    });
 }
