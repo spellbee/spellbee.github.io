@@ -12,18 +12,19 @@ var misspelledList = []
 var currentIndex = 0
 var incorrectList = []
 var isIncorrectListSession = false
+var pruneMissedList = []
 
-if(typeof localStorage.incorrectList !== "undefined") {
-    incorrectList = JSON.parse(localStorage.incorrectList || []);
+if (typeof localStorage.incorrectList !== "undefined") {
+    incorrectList = JSON.parse(localStorage.incorrectList);
 }
 
-if(typeof localStorage.practiceList !== "undefined") {
-    currentList = JSON.parse(localStorage.practiceList || [])
+if (typeof localStorage.practiceList !== "undefined") {
+    currentList = JSON.parse(localStorage.practiceList)
 }
 
 // Auto navigate to practice
 var hash = window.location.hash;
-switch(hash){
+switch (hash) {
     case '#practice':
         navigate("practice")
         break;
@@ -34,7 +35,7 @@ switch(hash){
         navigate("wordlist")
         break;
     default:
-        //do nothing
+    //do nothing
 }
 
 hideButtonsBasedOnState()
@@ -92,7 +93,7 @@ function practiceWordMeaning(word) {
             .then((result) => {
                 const obj = result
 
-                if(typeof obj.definitions === "undefined") {
+                if (typeof obj.definitions === "undefined") {
                     $("#practice-word-meaning").text("No definitions found for : " + word)
                 } else {
                     $("#practice-word-pronunciation").text('/' + obj.pronunciation + '/')
@@ -106,35 +107,35 @@ function practiceWordMeaning(word) {
 function textToSpeech(word) {
     const url = GOOGLE_TTS_URL + API_KEY
     const data = {
-        'input':{
+        'input': {
             'text': word
         },
-        'voice':{
-            'languageCode':'en-US',
-            'name':'en-US-Wavenet-C',
-            'ssmlGender':'FEMALE'
+        'voice': {
+            'languageCode': 'en-US',
+            'name': 'en-US-Wavenet-C',
+            'ssmlGender': 'FEMALE'
         },
-        'audioConfig':{
-        'audioEncoding':'MP3'
+        'audioConfig': {
+            'audioEncoding': 'MP3'
         }
     }
-    const otherparam={
-        headers:{
-            "content-type":"application/json; charset=UTF-8"
+    const otherparam = {
+        headers: {
+            "content-type": "application/json; charset=UTF-8"
         },
-        body:JSON.stringify(data),
-        method:"POST"
-     };
-    fetch(url,otherparam)
-    .then(data=>{return data.json()})
-    .then(res=>{
-        console.log(res.audioContent)
-        var audio = document.getElementById('audio')
-        audio.src = "data:audio/mp3;base64," + res.audioContent
-        audio.playbackRate = 0.9;
-        audio.play()
-     })
-    .catch(error=>{console.log(error);state.onError(error)})
+        body: JSON.stringify(data),
+        method: "POST"
+    };
+    fetch(url, otherparam)
+        .then(data => { return data.json() })
+        .then(res => {
+            console.log(res.audioContent)
+            var audio = document.getElementById('audio')
+            audio.src = "data:audio/mp3;base64," + res.audioContent
+            audio.playbackRate = 0.9;
+            audio.play()
+        })
+        .catch(error => { console.log(error); state.onError(error) })
 }
 
 function getWordMeaning(word) {
@@ -152,7 +153,7 @@ function getWordMeaning(word) {
             .then((result) => {
                 const obj = result
 
-                if(typeof obj.definitions === "undefined") {
+                if (typeof obj.definitions === "undefined") {
                     $("#wordcard-header").text(word)
                     $("#wordcard-meaning").text("No definitions found for : " + word)
                 } else {
@@ -166,7 +167,7 @@ function getWordMeaning(word) {
 }
 
 function navigate(section) {
-    switch(section) {
+    switch (section) {
         case "pronounce":
             $("#nav-pronounce").addClass("is-active")
             $("#nav-practice").removeClass("is-active")
@@ -204,12 +205,12 @@ function navigate(section) {
 
             break;
         default:
-            // Do nothing
+        // Do nothing
     }
 }
 
 function showMessage(message, type) {
-    if(type == "error"){
+    if (type == "error") {
         $("#message-text").text(message)
         $("#message").addClass("is-danger")
     } else {
@@ -218,8 +219,8 @@ function showMessage(message, type) {
     }
 
     $("#message").removeClass("is-hidden")
-    $(function() {
-        setTimeout(function() {
+    $(function () {
+        setTimeout(function () {
             $("#message").addClass("is-hidden")
             $("#message").removeClass("is-danger")
             $("#message").removeClass("is-info")
@@ -228,7 +229,7 @@ function showMessage(message, type) {
 }
 
 function loadFromWordList() {
-    if(!$("#wordlist").val()) {
+    if (!$("#wordlist").val()) {
         currentList = []
     } else {
         currentList = $("#wordlist").val().split('\n');
@@ -238,11 +239,12 @@ function loadFromWordList() {
 
 function loadFromMisspeltStorage() {
     currentList = JSON.parse(localStorage.incorrectList)
+    pruneMissedList = []
 }
 
 function hideButtonsBasedOnState() {
-    if(typeof localStorage.currentItem !== "undefined") {
-        if(JSON.parse(localStorage.currentItem) > 0) {
+    if (typeof localStorage.currentItem !== "undefined") {
+        if (JSON.parse(localStorage.currentItem) > 0) {
             $("#practice-resume").removeClass("is-hidden")
         } else {
             $("#practice-resume").addClass("is-hidden")
@@ -250,7 +252,7 @@ function hideButtonsBasedOnState() {
     } else {
         $("#practice-resume").addClass("is-hidden")
     }
-    if(incorrectList.length > 0) {
+    if (incorrectList.length > 0) {
         $("#practice-miss").removeClass("is-hidden")
     } else {
         $("#practice-miss").addClass("is-hidden")
@@ -258,7 +260,7 @@ function hideButtonsBasedOnState() {
 }
 
 function startNewPractice(useMisspelledWords) {
-    if(useMisspelledWords) {
+    if (useMisspelledWords) {
         loadFromMisspeltStorage()
         isIncorrectListSession = true
     } else {
@@ -267,7 +269,7 @@ function startNewPractice(useMisspelledWords) {
     misspelledList = []
     currentIndex = 0
 
-    if(currentList.length < 1) {
+    if (currentList.length < 1) {
         showMessage("Practice words list is empty! Navigate to words section and select from file.", "error")
     } else {
         resumePractice(false)
@@ -278,12 +280,12 @@ function resumePractice(resume) {
     $("#session-selector").addClass("is-hidden")
     $("#practice-card").removeClass("is-hidden")
 
-    if(resume) {
+    if (resume) {
         currentIndex = JSON.parse(localStorage.currentItem)
         console.log("Resuming previous sesion!")
     }
 
-    if(currentIndex < currentList.length) {
+    if (currentIndex < currentList.length) {
         $("#practice-word").text(currentList[currentIndex])
         repeat()
     }
@@ -292,7 +294,20 @@ function resumePractice(resume) {
 function endPractice() {
     $("#practice-card").addClass("is-hidden")
     localStorage.currentItem = JSON.stringify(0)
-    localStorage.removeItem("practiceList")
+    if (!isIncorrectListSession) {
+        localStorage.removeItem("practiceList")
+        localStorage.incorrectList = JSON.stringify(incorrectList)
+    } else {
+        var tempArray = JSON.parse(localStorage.incorrectList)
+        for (i = 0; i < pruneMissedList.length; i++) {
+            const index = tempArray.indexOf(pruneMissedList[i])
+            if (index > -1) {
+                tempArray.splice(index, 1);
+            }
+        }
+        localStorage.incorrectList = JSON.stringify(tempArray)
+    }
+
     isIncorrectListSession = false
     hideButtonsBasedOnState()
     $("#session-selector").removeClass("is-hidden")
@@ -305,14 +320,16 @@ function misspelledPractice() {
 }
 
 function next(result) {
-    if(result != true) {
+    if (result != true) {
         appendToMissedList(currentList[currentIndex])
     } else {
-        removeFromMissedList(currentList[currentIndex])
+        if (isIncorrectListSession) {
+            removeFromMissedList(currentList[currentIndex])
+        }
     }
     currentIndex++
-    if(currentIndex < currentList.length) {
-        if(!isIncorrectListSession) {
+    if (currentIndex < currentList.length) {
+        if (!isIncorrectListSession) {
             localStorage.currentItem = JSON.stringify(currentIndex)
         }
         $("#practice-word").text(currentList[currentIndex])
@@ -331,26 +348,27 @@ function next(result) {
 }
 
 function removeFromMissedList(word) {
-    incorrectList.splice($.inArray(word, incorrectList),1);
-    localStorage.incorrectList = JSON.stringify(incorrectList)
-    console.log(word + " removed from incorrect master list.");
+    if (!pruneMissedList.includes(word)) {
+        pruneMissedList.push(word)
+    }
 }
 
 function appendToMissedList(word) {
-    if(incorrectList.indexOf(word) === -1) {
-        incorrectList.push(word);
+    if (!incorrectList.includes(word)) {
+        incorrectList.push(word)
+        console.log(incorrectList)
         localStorage.incorrectList = JSON.stringify(incorrectList)
         console.log(word + " added to incorrect master list.");
     }
     $("#miss-list").append("<p><i class='fas fa-times has-text-danger-dark'></i>&nbsp;&nbsp;<span>" + word + "</span></p>")
 }
 
-function fetchWordsOnline(){
+function fetchWordsOnline() {
     var selectedGrade = $("#grade").val()
     $.ajax({
-        url : GIHUB_TEXT_FOLDER + "grade-" + selectedGrade + ".txt",
+        url: GIHUB_TEXT_FOLDER + "grade-" + selectedGrade + ".txt",
         dataType: "text",
-        success : function (data) {
+        success: function (data) {
             $("#wordlist").text(data);
         }
     });
